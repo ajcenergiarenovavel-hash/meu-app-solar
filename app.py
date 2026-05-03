@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
+from streamlit_js_eval import get_geolocation # Necessário instalar: pip install streamlit-js-eval
 
 # 1. CONFIGURAÇÃO DA PÁGINA
 st.set_page_config(
@@ -9,11 +10,17 @@ st.set_page_config(
     page_icon="☀️"
 )
 
+# Funções auxiliares para geolocalização
+def calcular_distancia(lat1, lon1, lat2, lon2):
+    # Fórmula de Haversine para encontrar a cidade mais próxima
+    p = 0.017453292519943295
+    a = 0.5 - np.cos((lat2 - lat1) * p)/2 + np.cos(lat1 * p) * np.cos(lat2 * p) * (1 - np.cos((lon2 - lon1) * p)) / 2
+    return 12742 * np.arcsin(np.sqrt(a))
+
 # 2. FUNÇÃO PARA CARREGAR DADOS DO CSV
 @st.cache_data
 def carregar_dados():
     try:
-        # Puxa os dados do arquivo CSV local
         df = pd.read_csv('cidades_rs.csv')
         return df
     except FileNotFoundError:
@@ -34,15 +41,40 @@ with col_title:
 st.markdown("---")
 
 if not df_rs.empty:
-    # 4. INPUTS DO USUÁRIO
-    c1, c2 = st.columns(2)
+    # --- NOVO: BOTÃO DE LOCALIZAÇÃO ---
+    st.subheader("📍 Localização do Projeto")
+    col_loc1, col_loc2 = st.columns([2, 1])
+    
+    with col_loc2:
+        loc = get_geolocation()
+        if st.button("🌐 Detectar minha localização"):
+            if loc:
+                user_lat = loc['coords']['latitude']
+                user_lon = loc['coords']['longitude']
+                
+                # Encontra a cidade mais próxima na sua lista CSV
+                distancias = df_rs.apply(lambda row: calcular_distancia(user_lat, user_lon, row['lat'], row['lon']), axis=1)
+                idx_proxima = distancias.idxmin()
+                st.session_state['cidade_detectada'] = df_rs.loc[idx_proxima, 'cidade']
+                st.success(f"Localização aproximada detectada: {st.session_state['cidade_detectada']}")
+            else:
+                st.error("Por favor, permita o acesso à localização no seu navegador.")
 
+    with col_loc1:
+        # Define a cidade padrão (detectada ou Porto Alegre)
+        default_index = 0
+        if 'cidade_detectada' in st.session_state:
+            lista_cidades = sorted(df_rs['cidade'].unique())
+            default_index = lista_cidades.index(st.session_state['cidade_detectada'])
+            
+        cidade_selecionada = st.selectbox("Selecione ou confirme o Município:", sorted(df_rs['cidade'].unique()), index=default_index)
+
+    # 4. RESTANTE DOS INPUTS
+    dados_cidade = df_rs[df_rs['cidade'] == cidade_selecionada].iloc[0]
+    
+    c1, c2 = st.columns(2)
     with c1:
-        st.subheader("📍 Localização do Projeto")
-        cidade_selecionada = st.selectbox("Selecione o Município do RS:", df_rs['cidade'].sort_values())
-        dados_cidade = df_rs[df_rs['cidade'] == cidade_selecionada].iloc[0]
-        
-        st.info(f"**Coordenadas GPS:** Latitude: {dados_cidade['lat']} | Longitude: {dados_cidade['lon']}")
+        st.info(f"**Dados Técnicos Local:** Lat: {dados_cidade['lat']} | Lon: {dados_cidade['lon']} | HSP: {dados_cidade['hsp']}")
         tarifa = st.number_input("Tarifa da Concessionária (R$/kWh)", value=1.02, step=0.01)
 
     with c2:
@@ -51,11 +83,9 @@ if not df_rs.empty:
         p_painel = cc1.number_input("Potência do Painel (Wp)", value=550)
         qtd_painel = cc2.number_input("Quantidade de Painéis", value=10)
         potencia_total_kwp = (p_painel * qtd_painel) / 1000
-        st.info(f"**Capacidade Instalada:** {potencia_total_kwp:.2f} kWp")
         pr = st.slider("Eficiência Estimada (PR)", 0.70, 0.90, 0.80)
 
-    # 5. CÁLCULOS TÉCNICOS (Sazonalidade e GD2)
-    # Fatores mensais baseados no clima do Rio Grande do Sul
+    # 5. CÁLCULOS TÉCNICOS
     fatores_mensais = [1.28, 1.12, 1.05, 0.82, 0.65, 0.58, 0.62, 0.75, 0.88, 1.02, 1.15, 1.25]
     meses = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"]
 
@@ -63,31 +93,22 @@ if not df_rs.empty:
     geracao_base = potencia_total_kwp * hsp_anual * pr * 30.4
     geracao_mensal_kwh = [round(geracao_base * f, 2) for f in fatores_mensais]
 
-    # Regra GD2 - 2026 (Pagamento de 60% do Fio B)
-    fio_b_perc = dados_cidade['fio_b']
-    encargo_gd2 = (tarifa * fio_b_perc) * 0.60
+    encargo_gd2 = (tarifa * dados_cidade['fio_b']) * 0.60
     tarifa_liquida = tarifa - encargo_gd2
     economia_mensal = [round(g * tarifa_liquida, 2) for g in geracao_mensal_kwh]
 
     # 6. EXIBIÇÃO DE RESULTADOS
     st.divider()
-    st.subheader("📊 Resumo de Geração")
     r1, r2, r3 = st.columns(3)
     r1.metric("Geração Média Mensal", f"{np.mean(geracao_mensal_kwh):.2f} kWh")
     r2.metric("Geração Total Anual", f"{sum(geracao_mensal_kwh):.2f} kWh")
     r3.metric("Economia Anual Estimada", f"R$ {sum(economia_mensal):.2f}")
 
     st.markdown("---")
-    st.subheader("⚡ Detalhamento Mensal e Gráfico")
-
     t_col, g_col = st.columns([1, 2])
 
     with t_col:
-        df_result = pd.DataFrame({
-            "Mês": meses,
-            "Geração (kWh)": geracao_mensal_kwh,
-            "Economia (R$)": economia_mensal
-        })
+        df_result = pd.DataFrame({"Mês": meses, "Geração (kWh)": geracao_mensal_kwh, "Economia (R$)": economia_mensal})
         st.dataframe(df_result, hide_index=True, use_container_width=True)
 
     with g_col:
@@ -96,14 +117,14 @@ if not df_rs.empty:
     st.markdown("---")
     m1, m2, m3 = st.columns(3)
     m1.metric("Concessionária", dados_cidade['concessionaria'])
-    m2.metric("Cidade Referência", cidade_selecionada)
-    m3.metric("Valor do Crédito Líquido", f"R$ {tarifa_liquida:.2f}")
+    m2.metric("Fio B Pago (60%)", f"R$ {encargo_gd2:.3f}")
+    m3.metric("Crédito Líquido", f"R$ {tarifa_liquida:.2f}")
 
     # 7. FUNÇÃO DE IMPRESSÃO
     st.markdown("""
         <style>
         @media print {
-            .stButton, header, footer { display: none !important; }
+            .stButton, header, footer, [data-testid="stSidebar"] { display: none !important; }
             .main { background-color: white !important; }
         }
         </style>
@@ -112,6 +133,6 @@ if not df_rs.empty:
     if st.button("🖨️ Imprimir Proposta / Gerar PDF"):
         st.markdown("<script>window.print();</script>", unsafe_allow_html=True)
 
-    st.caption("Simulador AJC Soluções em Energia | Dados: CRESESB | Regras: Lei 14.300")
+    st.caption("AJC Soluções em Energia | Localização inteligente via GPS")
 else:
-    st.warning("Certifique-se de que o arquivo 'cidades_rs.csv' está na mesma pasta do código.")
+    st.warning("Carregue o arquivo 'cidades_rs.csv' para continuar.")
