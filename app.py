@@ -37,15 +37,22 @@ def identificar_cidade(lat, lon):
 
 # --- INTERFACE DO APP ---
 
-# Topo com Logo e Título
-col_logo, col_title = st.columns([1, 4])
-with col_logo:
-    # Caso não tenha subido o logo ainda, ele exibirá um placeholder
-    st.image("https://raw.githubusercontent.com/ajcsolucoes/solar/main/logo.png", width=180) 
+# Cabeçalho com Ícone Fotovoltaico e Título
+col_icon, col_title = st.columns([1, 5])
+with col_icon:
+    # Ícone representando Sol + Painel (remetendo à imagem solicitada)
+    st.markdown("""
+        <div style="display: flex; justify-content: center; align-items: center; background-color: #f0f2f6; border-radius: 20px; padding: 10px;">
+            <span style="font-size: 70px;">☀️</span>
+            <span style="font-size: 50px; margin-left: -20px; margin-top: 30px;">🟦</span>
+        </div>
+    """, unsafe_index=True)
+    # Alternativamente, se preferir uma imagem de ícone externa:
+    # st.image("https://cdn-icons-png.flaticon.com/512/3026/3026360.png", width=120)
 
 with col_title:
     st.title("Simulador de Geração Solar AJC Soluções em Energia")
-    st.caption("(Cálculo de economia considerando desconto progressivo do Fio B - GD2)")
+    st.caption("Cálculo de economia com compensação de crédito e encargo do Fio B (GD2 - 2026)")
 
 st.markdown("---")
 
@@ -101,7 +108,7 @@ economia_mensal = [round(g * tarifa_com_desconto, 2) for g in geracao_mensal]
 
 st.divider()
 
-# 1. RESUMO DE GERAÇÃO (Nova Seção Solicitada)
+# 1. RESUMO DE GERAÇÃO
 st.subheader("📊 Resumo de Geração")
 res_gen_1, res_gen_2 = st.columns(2)
 with res_gen_1:
@@ -137,4 +144,4 @@ with graph_col:
     st.bar_chart(df_res.set_index("Mês")["Geração (kWh)"])
 
 st.markdown("---")
-st.caption("Simulador AJC Soluções em Energia - Base de dados CRESESB adaptada.")
+st.caption("Simulador AJC Soluções em Energia - Base de dados CRESESB / Lei 14.300.")
