@@ -1,7 +1,35 @@
-cidade,lat,lon,hsp_anual,concessionaria,fio_b
+cidade,lat,lon,hsp,concessionaria,fio_b
 Porto Alegre,-30.0325,-51.2257,4.42,CEEE Equatorial,0.28
 Caxias do Sul,-29.1678,-51.1794,4.15,RGE Sul,0.32
-Passo Fundo,-28.2628,-52.4067,4.30,RGE Sul,0.32
+Canoas,-29.9189,-51.1781,4.40,CEEE Equatorial,0.28
 Pelotas,-31.7654,-52.3376,4.35,CEEE Equatorial,0.28
 Santa Maria,-29.6842,-53.8069,4.40,RGE Sul,0.32
-... (todas as outras 492 cidades)
+Gravataí,-29.9422,-51.0111,4.38,RGE Sul,0.32
+Viamão,-30.0836,-51.0236,4.36,CEEE Equatorial,0.28
+Novo Hamburgo,-29.6842,-51.1331,4.25,RGE Sul,0.32
+Passo Fundo,-28.2628,-52.4067,4.30,RGE Sul,0.32
+Rio Grande,-32.0350,-52.0986,4.32,CEEE Equatorial,0.28
+Alvorada,-29.9986,-51.0772,4.37,CEEE Equatorial,0.28
+Erechim,-27.6340,-52.2730,4.25,RGE Sul,0.32
+Uruguaiana,-29.7540,-57.0880,4.80,RGE Sul,0.32
+Bento Gonçalves,-29.1700,-51.5110,4.18,RGE Sul,0.32
+Bagé,-31.3300,-54.1000,4.45,CEEE Equatorial,0.28
+Santa Cruz do Sul,-29.7100,-52.4200,4.35,RGE Sul,0.32
+Eldorado do Sul,-30.0000,-51.3000,4.41,CEEE Equatorial,0.28
+Encruzilhada do Sul,-30.5400,-52.5200,4.55,RGE Sul,0.32
+Guaíba,-30.1100,-51.3200,4.40,CEEE Equatorial,0.28
+Torres,-29.3400,-49.7200,4.12,CEEE Equatorial,0.28
+Vacaria,-28.5100,-50.9300,4.10,RGE Sul,0.32
+Gramado,-29.3746,-50.8764,4.12,RGE Sul,0.32
+Canela,-29.3621,-50.8142,4.10,RGE Sul,0.32
+São Francisco de Paula,-29.4478,-50.5841,4.08,RGE Sul,0.32
+Itati,-29.4582,-50.1119,4.05,CEEE Equatorial,0.28
+Terra de Areia,-29.5855,-50.0634,4.15,CEEE Equatorial,0.28
+Torres,-29.3400,-49.7200,4.12,CEEE Equatorial,0.28
+Capão da Canoa,-29.7547,-50.0152,4.18,CEEE Equatorial,0.28
+Xangri-lá,-29.8025,-50.0468,4.10,CEEE Equatorial,0.28
+Atlântida,-29.7914,-50.0305,4.10,CEEE Equatorial,0.28
+Tapes,-30.6732,-51.3965,4.35,CEEE Equatorial,0.28
+Barra do Ribeiro,-30.2902,-51.3005,4.38,CEEE Equatorial,0.28
+São Lourenço do Sul,-31.3653,-51.9772,4.30,CEEE Equatorial,0.28
+Pântano Grande,-30.1872,-52.3735,4.45,RGE Sul,0.32
