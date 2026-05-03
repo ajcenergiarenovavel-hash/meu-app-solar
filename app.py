@@ -13,7 +13,7 @@ st.set_page_config(
 @st.cache_data
 def carregar_dados():
     try:
-        # Carrega o novo arquivo consolidado (padrão vírgula e ponto decimal)
+        # Carrega o arquivo consolidado (padrão vírgula e ponto decimal)
         df = pd.read_csv('cidades_rs_completo.csv')
         return df
     except FileNotFoundError:
@@ -37,11 +37,9 @@ if not df_rs.empty:
 
     with c1:
         st.subheader("📍 Localização")
-        # Lista de cidades em ordem alfabética para o seletor
         lista_cidades = sorted(df_rs['cidade'].unique())
         cidade_selecionada = st.selectbox("Selecione o Município do RS:", lista_cidades)
         
-        # Filtra os dados da cidade escolhida
         dados_cidade = df_rs[df_rs['cidade'] == cidade_selecionada].iloc[0]
         
         st.info(f"**Concessionária:** {dados_cidade['concessionaria']} | **HSP:** {dados_cidade['hsp']}")
@@ -57,18 +55,18 @@ if not df_rs.empty:
         st.success(f"**Capacidade Instalada:** {potencia_total_kwp:.2f} kWp")
         pr = st.slider("Eficiência Estimada (PR)", 0.70, 0.90, 0.80)
 
-    # 5. CÁLCULOS E ORDENAÇÃO CRONOLÓGICA
-    # Definimos as listas fixas para manter a ordem correta de Janeiro a Dezembro
-    meses = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"]
+    # 5. CÁLCULOS E DEFINIÇÃO DA ORDEM CRONOLÓGICA
+    # Lista mestra para ordem cronológica
+    meses_ordem = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"]
     fatores_sazonalidade = [1.28, 1.12, 1.05, 0.82, 0.65, 0.58, 0.62, 0.75, 0.88, 1.02, 1.15, 1.25]
     
     hsp_anual = dados_cidade['hsp']
     geracao_base = potencia_total_kwp * hsp_anual * pr * 30.4
     
-    # Gerando os dados mensais
+    # Gerando os dados mensais seguindo a ordem da lista meses_ordem
     geracao_mensal = [round(geracao_base * f, 2) for f in fatores_sazonalidade]
     
-    # Cálculo Econômico GD2 (2026) - 60% do Fio B pago
+    # Cálculo Econômico GD2 (2026)
     fio_b_perc = dados_cidade['fio_b']
     custo_fio_b = (tarifa * fio_b_perc) * 0.60
     tarifa_liquida = tarifa - custo_fio_b
@@ -81,22 +79,25 @@ if not df_rs.empty:
     r2.metric("Economia Anual Estimada", f"R$ {sum(economia_mensal):.2f}")
     r3.metric("Valor do Crédito Líquido", f"R$ {tarifa_liquida:.2f}")
 
-    # 7. GRÁFICO ORGANIZADO POR MÊS (ORDEM CRONOLÓGICA)
-    st.markdown("### 📈 Curva de Geração Mensal (Janeiro a Dezembro)")
+    # 7. GRÁFICO CORRIGIDO PARA ORDEM CRONOLÓGICA
+    st.markdown("### 📈 Curva de Geração Mensal")
     
-    # Criamos o DataFrame garantindo que os meses fiquem na ordem da lista original
+    # Criamos o DataFrame
     df_grafico = pd.DataFrame({
-        "Mês": meses,
+        "Mês": meses_ordem,
         "Geração (kWh)": geracao_mensal
     })
     
-    # Definir o índice como 'Mês' preserva a ordem cronológica no st.bar_chart
+    # CONVERSÃO CRÍTICA: Definir a coluna 'Mês' como categoria ordenada para evitar ordem alfabética
+    df_grafico['Mês'] = pd.Categorical(df_grafico['Mês'], categories=meses_ordem, ordered=True)
+    
+    # Ao usar o .set_index("Mês"), o Streamlit respeitará a ordem categórica definida acima
     st.bar_chart(df_grafico.set_index("Mês"))
 
     # 8. DETALHAMENTO EM TABELA
     with st.expander("Ver tabela detalhada de geração e economia"):
         df_detalhe = pd.DataFrame({
-            "Mês": meses,
+            "Mês": meses_ordem,
             "Geração (kWh)": geracao_mensal,
             "Economia (R$)": economia_mensal
         })
@@ -106,4 +107,4 @@ if not df_rs.empty:
     st.caption(f"☀️ AJC Soluções em Energia | Local: {cidade_selecionada} | Regra: GD2 (Lei 14.300)")
 
 else:
-    st.error("Erro: O arquivo 'cidades_rs_completo.csv' não foi encontrado. Verifique seu repositório no GitHub.")
+    st.error("Erro: O arquivo 'cidades_rs_completo.csv' não foi encontrado no repositório.")
