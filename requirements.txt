@@ -1,3 +1,4 @@
 streamlit
 pandas
-geopy
+numpy
+streamlit-js-eval
