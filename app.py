@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-from streamlit_js_eval import get_geolocation # Necessário instalar: pip install streamlit-js-eval
+from streamlit_js_eval import get_geolocation, streamlit_js_eval # Adicionado streamlit_js_eval
 
 # 1. CONFIGURAÇÃO DA PÁGINA
 st.set_page_config(
@@ -12,7 +12,6 @@ st.set_page_config(
 
 # Funções auxiliares para geolocalização
 def calcular_distancia(lat1, lon1, lat2, lon2):
-    # Fórmula de Haversine para encontrar a cidade mais próxima
     p = 0.017453292519943295
     a = 0.5 - np.cos((lat2 - lat1) * p)/2 + np.cos(lat1 * p) * np.cos(lat2 * p) * (1 - np.cos((lon2 - lon1) * p)) / 2
     return 12742 * np.arcsin(np.sqrt(a))
@@ -41,7 +40,7 @@ with col_title:
 st.markdown("---")
 
 if not df_rs.empty:
-    # --- NOVO: BOTÃO DE LOCALIZAÇÃO ---
+    # --- BOTÃO DE LOCALIZAÇÃO ---
     st.subheader("📍 Localização do Projeto")
     col_loc1, col_loc2 = st.columns([2, 1])
     
@@ -51,8 +50,6 @@ if not df_rs.empty:
             if loc:
                 user_lat = loc['coords']['latitude']
                 user_lon = loc['coords']['longitude']
-                
-                # Encontra a cidade mais próxima na sua lista CSV
                 distancias = df_rs.apply(lambda row: calcular_distancia(user_lat, user_lon, row['lat'], row['lon']), axis=1)
                 idx_proxima = distancias.idxmin()
                 st.session_state['cidade_detectada'] = df_rs.loc[idx_proxima, 'cidade']
@@ -61,13 +58,15 @@ if not df_rs.empty:
                 st.error("Por favor, permita o acesso à localização no seu navegador.")
 
     with col_loc1:
-        # Define a cidade padrão (detectada ou Porto Alegre)
         default_index = 0
+        lista_cidades = sorted(df_rs['cidade'].unique())
         if 'cidade_detectada' in st.session_state:
-            lista_cidades = sorted(df_rs['cidade'].unique())
-            default_index = lista_cidades.index(st.session_state['cidade_detectada'])
+            try:
+                default_index = lista_cidades.index(st.session_state['cidade_detectada'])
+            except ValueError:
+                default_index = 0
             
-        cidade_selecionada = st.selectbox("Selecione ou confirme o Município:", sorted(df_rs['cidade'].unique()), index=default_index)
+        cidade_selecionada = st.selectbox("Selecione ou confirme o Município:", lista_cidades, index=default_index)
 
     # 4. RESTANTE DOS INPUTS
     dados_cidade = df_rs[df_rs['cidade'] == cidade_selecionada].iloc[0]
@@ -120,18 +119,22 @@ if not df_rs.empty:
     m2.metric("Fio B Pago (60%)", f"R$ {encargo_gd2:.3f}")
     m3.metric("Crédito Líquido", f"R$ {tarifa_liquida:.2f}")
 
-    # 7. FUNÇÃO DE IMPRESSÃO
+    # 7. NOVA FUNÇÃO DE IMPRESSÃO (CORRIGIDA)
     st.markdown("""
         <style>
         @media print {
-            .stButton, header, footer, [data-testid="stSidebar"] { display: none !important; }
+            .stButton, header, footer, [data-testid="stSidebar"], [data-testid="stToolbar"], .stSelectbox, .stNumberInput, .stSlider { 
+                display: none !important; 
+            }
             .main { background-color: white !important; }
+            .block-container { padding: 0 !important; }
         }
         </style>
         """, unsafe_allow_html=True)
 
-    if st.button("🖨️ Imprimir Proposta / Gerar PDF"):
-        st.markdown("<script>window.print();</script>", unsafe_allow_html=True)
+    st.markdown("---")
+    if st.button("📄 Gerar PDF / Imprimir Proposta"):
+        streamlit_js_eval(js_expressions="window.print()", want_output=False)
 
     st.caption("AJC Soluções em Energia | Localização inteligente via GPS")
 else:
