@@ -13,105 +13,85 @@ st.set_page_config(
 @st.cache_data
 def carregar_dados():
     try:
-        # Puxa os dados do arquivo CSV local
         df = pd.read_csv('cidades_rs.csv')
         return df
     except FileNotFoundError:
-        st.error("Erro: O arquivo 'cidades_rs.csv' não foi encontrado no diretório.")
         return pd.DataFrame()
 
 df_rs = carregar_dados()
 
-# 3. CABEÇALHO
-col_icon, col_title = st.columns([0.5, 5.5])
-with col_icon:
-    st.markdown("<h1 style='font-size: 70px; margin-top: -10px;'>☀️</h1>", unsafe_allow_html=True)
+# 3. ESTILO CSS PARA PDF (ESCONDE INTERFACE NA IMPRESSÃO)
+st.markdown("""
+    <style>
+    @media print {
+        /* Esconde elementos de navegação e inputs no PDF */
+        .stButton, .stSlider, .stNumberInput, .stSelectbox, .stHeader, 
+        header, footer, [data-testid="stSidebar"], [data-testid="stToolbar"] {
+            display: none !important;
+        }
+        .main {
+            background-color: white !important;
+        }
+        /* Ajusta margens para o papel A4 */
+        .block-container {
+            padding-top: 1rem !important;
+            padding-bottom: 1rem !important;
+        }
+    }
+    
+    /* Estilização do Botão para parecer uma ferramenta profissional */
+    div.stButton > button:first-child {
+        background-color: #1E3A8A;
+        color: white;
+        border-radius: 5px;
+        height: 3em;
+        width: 100%;
+        font-weight: bold;
+    }
+    </style>
+    """, unsafe_allow_html=True)
 
-with col_title:
-    st.title("Simulador de Geração Solar AJC Soluções em Energia")
-    st.caption("Cálculo de economia com Fio B (Regras GD2 - 2026)")
-
-st.markdown("---")
+# 4. CABEÇALHO DA PROPOSTA
+st.markdown("<h1 style='text-align: center; color: #1E3A8A;'>AJC SOLUÇÕES EM ENERGIA</h1>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center;'>Simulação de Geração Fotovoltaica Personalizada</p>", unsafe_allow_html=True)
 
 if not df_rs.empty:
-    # 4. INPUTS DO USUÁRIO
+    st.markdown("---")
     c1, c2 = st.columns(2)
 
     with c1:
-        st.subheader("📍 Localização do Projeto")
-        cidade_selecionada = st.selectbox("Selecione o Município do RS:", df_rs['cidade'].sort_values())
-        dados_cidade = df_rs[df_rs['cidade'] == cidade_selecionada].iloc[0]
-        
-        st.info(f"**Coordenadas GPS:** Latitude: {dados_cidade['lat']} | Longitude: {dados_cidade['lon']}")
-        tarifa = st.number_input("Tarifa da Concessionária (R$/kWh)", value=1.02, step=0.01)
+        st.subheader("📍 Localização")
+        cidade_sel = st.selectbox("Selecione o Município:", df_rs['cidade'].sort_values())
+        dados = df_rs[df_rs['cidade'] == cidade_sel].iloc[0]
+        tarifa = st.number_input("Tarifa (R$/kWh)", value=1.02)
 
     with c2:
-        st.subheader("⚙️ Dados do Sistema")
-        cc1, cc2 = st.columns(2)
-        p_painel = cc1.number_input("Potência do Painel (Wp)", value=550)
-        qtd_painel = cc2.number_input("Quantidade de Painéis", value=10)
-        potencia_total_kwp = (p_painel * qtd_painel) / 1000
-        st.info(f"**Capacidade Instalada:** {potencia_total_kwp:.2f} kWp")
-        pr = st.slider("Eficiência Estimada (PR)", 0.70, 0.90, 0.80)
+        st.subheader("⚙️ Sistema")
+        potencia = st.number_input("Capacidade Total (kWp)", value=5.5)
+        pr = st.slider("Eficiência (PR)", 0.70, 0.90, 0.80)
 
-    # 5. CÁLCULOS TÉCNICOS (Sazonalidade e GD2)
-    # Fatores mensais baseados no clima do Rio Grande do Sul
-    fatores_mensais = [1.28, 1.12, 1.05, 0.82, 0.65, 0.58, 0.62, 0.75, 0.88, 1.02, 1.15, 1.25]
-    meses = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"]
+    # 5. CÁLCULOS
+    fatores = [1.28, 1.12, 1.05, 0.82, 0.65, 0.58, 0.62, 0.75, 0.88, 1.02, 1.15, 1.25]
+    geracao_base = potencia * dados['hsp'] * pr * 30.4
+    geracao_mensal = [round(geracao_base * f, 2) for f in fatores]
+    
+    # Regra GD2 2026
+    tarifa_liq = tarifa - ((tarifa * dados['fio_b']) * 0.60)
+    economia_mensal = [round(g * tarifa_liq, 2) for g in geracao_mensal]
 
-    hsp_anual = dados_cidade['hsp']
-    geracao_base = potencia_total_kwp * hsp_anual * pr * 30.4
-    geracao_mensal_kwh = [round(geracao_base * f, 2) for f in fatores_mensais]
-
-    # Regra GD2 - 2026 (Pagamento de 60% do Fio B)
-    fio_b_perc = dados_cidade['fio_b']
-    encargo_gd2 = (tarifa * fio_b_perc) * 0.60
-    tarifa_liquida = tarifa - encargo_gd2
-    economia_mensal = [round(g * tarifa_liquida, 2) for g in geracao_mensal_kwh]
-
-    # 6. EXIBIÇÃO DE RESULTADOS
-    st.divider()
-    st.subheader("📊 Resumo de Geração")
+    # 6. RESULTADOS
+    st.markdown("---")
     r1, r2, r3 = st.columns(3)
-    r1.metric("Geração Média Mensal", f"{np.mean(geracao_mensal_kwh):.2f} kWh")
-    r2.metric("Geração Total Anual", f"{sum(geracao_mensal_kwh):.2f} kWh")
-    r3.metric("Economia Anual Estimada", f"R$ {sum(economia_mensal):.2f}")
+    r1.metric("Geração Média", f"{np.mean(geracao_mensal):.2f} kWh")
+    r2.metric("Economia Anual", f"R$ {sum(economia_mensal):.2f}")
+    r3.metric("Concessionária", dados['concessionaria'])
 
+    # 7. GRÁFICO
+    st.bar_chart(pd.DataFrame({"Geração (kWh)": geracao_mensal}, index=["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"]))
+
+    # 8. BOTÃO PARA SALVAR PDF
     st.markdown("---")
-    st.subheader("⚡ Detalhamento Mensal e Gráfico")
-
-    t_col, g_col = st.columns([1, 2])
-
-    with t_col:
-        df_result = pd.DataFrame({
-            "Mês": meses,
-            "Geração (kWh)": geracao_mensal_kwh,
-            "Economia (R$)": economia_mensal
-        })
-        st.dataframe(df_result, hide_index=True, use_container_width=True)
-
-    with g_col:
-        st.bar_chart(df_result.set_index("Mês")["Geração (kWh)"])
-
-    st.markdown("---")
-    m1, m2, m3 = st.columns(3)
-    m1.metric("Concessionária", dados_cidade['concessionaria'])
-    m2.metric("Cidade Referência", cidade_selecionada)
-    m3.metric("Valor do Crédito Líquido", f"R$ {tarifa_liquida:.2f}")
-
-    # 7. FUNÇÃO DE IMPRESSÃO
-    st.markdown("""
-        <style>
-        @media print {
-            .stButton, header, footer { display: none !important; }
-            .main { background-color: white !important; }
-        }
-        </style>
-        """, unsafe_allow_html=True)
-
-    if st.button("🖨️ Imprimir Proposta / Gerar PDF"):
+    if st.button("📄 GERAR PROPOSTA EM PDF"):
         st.markdown("<script>window.print();</script>", unsafe_allow_html=True)
 
-    st.caption("Simulador AJC Soluções em Energia | Dados: CRESESB | Regras: Lei 14.300")
-else:
-    st.warning("Certifique-se de que o arquivo 'cidades_rs.csv' está na mesma pasta do código.")
+    st.caption(f"Documento gerado para a cidade de {cidade_sel} em {pd.Timestamp.now().strftime('%d/%m/%Y')}")
