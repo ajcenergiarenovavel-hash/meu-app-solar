@@ -1,34 +1,98 @@
-cidade,lat,lon,hsp,concessionaria,fio_b
-Porto Alegre,-30.0325,-51.2257,4.42,CEEE Equatorial,0.28
-Caxias do Sul,-29.1678,-51.1794,4.15,RGE Sul,0.32
-Canoas,-29.9189,-51.1781,4.40,CEEE Equatorial,0.28
-Pelotas,-31.7654,-52.3376,4.35,CEEE Equatorial,0.28
-Santa Maria,-29.6842,-53.8069,4.40,RGE Sul,0.32
-Gravataí,-29.9422,-51.0111,4.38,RGE Sul,0.32
-Viamão,-30.0836,-51.0236,4.36,CEEE Equatorial,0.28
-Novo Hamburgo,-29.6842,-51.1331,4.25,RGE Sul,0.32
-Passo Fundo,-28.2628,-52.4067,4.30,RGE Sul,0.32
-Rio Grande,-32.0350,-52.0986,4.32,CEEE Equatorial,0.28
-Alvorada,-29.9986,-51.0772,4.37,CEEE Equatorial,0.28
-Erechim,-27.6340,-52.2730,4.25,RGE Sul,0.32
-Uruguaiana,-29.7540,-57.0880,4.80,RGE Sul,0.32
-Bento Gonçalves,-29.1700,-51.5110,4.18,RGE Sul,0.32
-Bagé,-31.3300,-54.1000,4.45,CEEE Equatorial,0.28
-Santa Cruz do Sul,-29.7100,-52.4200,4.35,RGE Sul,0.32
-Eldorado do Sul,-30.0000,-51.3000,4.41,CEEE Equatorial,0.28
-Encruzilhada do Sul,-30.5400,-52.5200,4.55,CEEE Equatorial,0.28
-Guaíba,-30.1100,-51.3200,4.40,CEEE Equatorial,0.28
-Torres,-29.3400,-49.7200,4.12,CEEE Equatorial,0.28
-Vacaria,-28.5100,-50.9300,4.10,RGE Sul,0.32
-Gramado,-29.3746,-50.8764,4.12,RGE Sul,0.32
-Canela,-29.3621,-50.8142,4.10,RGE Sul,0.32
-São Francisco de Paula,-29.4478,-50.5841,4.08,RGE Sul,0.32
-Itati,-29.4582,-50.1119,4.05,CEEE Equatorial,0.28
-Terra de Areia,-29.5855,-50.0634,4.15,CEEE Equatorial,0.28
-Capão da Canoa,-29.7547,-50.0152,4.18,CEEE Equatorial,0.28
-Xangri-lá,-29.8025,-50.0468,4.10,CEEE Equatorial,0.28
-Atlântida,-29.7914,-50.0305,4.10,CEEE Equatorial,0.28
-Tapes,-30.6732,-51.3965,4.35,CEEE Equatorial,0.28
-Barra do Ribeiro,-30.2902,-51.3005,4.38,CEEE Equatorial,0.28
-São Lourenço do Sul,-31.3653,-51.9772,4.30,CEEE Equatorial,0.28
-Pântano Grande,-30.1872,-52.3735,4.45,CEEE Equatorial,0.28
+cidade;uf;lat;lon;hsp;concessionaria;fio_b
+Alegrete;RS;-29,8125;-55,89222222;4,7;RGE Sul;0,32
+Alvorada;RS;-29,9986;-51,0772;4,37;CEEE Equatorial;0,28
+Antônio Prado;RS;-28,86694444;-51,28388889;4,18;RGE Sul;0,32
+Arroio Grande;RS;-32,22981111;-53,05645;4,35;CEEE Equatorial;0,28
+Atlântida;RS;-29,7914;-50,0305;4,1;CEEE Equatorial;0,28
+Bagé;RS;-31,33;-54,1;4,45;CEEE Equatorial;0,28
+Barra do Quaraí;RS;-30,211075;-57,55705833;4,8;RGE Sul;0,32
+Barra do Ribeiro;RS;-30,2902;-51,3005;4,38;CEEE Equatorial;0,28
+Bento Gonçalves;RS;-29,17;-51,511;4,18;RGE Sul;0,32
+Cachoeira do Sul;RS;-30,00222222;-52,94027778;4,45;RGE Sul;0,32
+Cachoeirinha;RS;-29,91527778;-51,08888889;4,38;RGE Sul;0,32
+Caçapava do Sul;RS;-30,54944444;-53,45916667;4,5;RGE Sul;0,32
+Campo Bom;RS;-29,67694444;-51,02916667;4,25;RGE Sul;0,32
+Campo Novo;RS;-27,66694444;-53,81027778;4,4;RGE Sul;0,32
+Canela;RS;-29,3621;-50,8142;4,1;RGE Sul;0,32
+Canoas;RS;-29,9189;-51,1781;4,4;CEEE Equatorial;0,28
+Capão da Canoa;RS;-29,7547;-50,0152;4,18;CEEE Equatorial;0,28
+Carazinho;RS;-28,32138889;-52,81555556;4,35;RGE Sul;0,32
+Caxias do Sul;RS;-29,1678;-51,1794;4,15;RGE Sul;0,32
+Charqueadas;RS;-29,9568;-51,62500556;4,38;CEEE Equatorial;0,28
+Cidreira;RS;-30,18116944;-50,20909167;4,15;CEEE Equatorial;0,28
+Cruz Alta;RS;-28,65777778;-53,61055556;4,4;RGE Sul;0,32
+Eldorado do Sul;RS;-30;-51,3;4,41;CEEE Equatorial;0,28
+Encruzilhada do Sul;RS;-30,54;-52,52;4,55;CEEE Equatorial;0,28
+Erechim;RS;-27,634;-52,273;4,25;RGE Sul;0,32
+Estância Velha;RS;-29,6475;-51,17472222;4,25;RGE Sul;0,32
+Esteio;RS;-29,85083333;-51,1825;4,39;RGE Sul;0,32
+Estrela;RS;-29,45333333;-51,93416667;4,35;RGE Sul;0,32
+Farroupilha;RS;-29,22861111;-51,34611111;4,18;RGE Sul;0,32
+Frederico Westphalen;RS;-27,34777778;-53,4025;4,38;RGE Sul;0,32
+Garibaldi;RS;-29,25638889;-51,525;4,15;RGE Sul;0,32
+Garruchos;RS;-28,189475;-55,63406944;4,65;RGE Sul;0,32
+Getúlio Vargas;RS;-27,87591111;-52,249575;4,25;RGE Sul;0,32
+Gramado;RS;-29,3746;-50,8764;4,12;RGE Sul;0,32
+Gravataí;RS;-29,9422;-51,0111;4,38;RGE Sul;0,32
+Guaíba;RS;-30,11;-51,32;4,4;CEEE Equatorial;0,28
+Guaporé;RS;-28,89472222;-51,85527778;4,25;RGE Sul;0,32
+Horizontina;RS;-27,63888889;-54,34111111;4,48;RGE Sul;0,32
+Ibirubá;RS;-28,60416667;-53,07888889;4,38;RGE Sul;0,32
+Ijuí;RS;-28,37;-53,84555556;4,45;RGE Sul;0,32
+Imbé;RS;-29,9775;-50,13;4,15;CEEE Equatorial;0,28
+Itati;RS;-29,4582;-50,1119;4,05;CEEE Equatorial;0,28
+Itaqui;RS;-29,17305556;-56,53666667;4,7;RGE Sul;0,32
+Ivoti;RS;-29,59415556;-51,15957222;4,32;RGE Sul;0,32
+Jaguarão;RS;-32,54055556;-53,38416667;4,35;CEEE Equatorial;0,28
+Lagoa Vermelha;RS;-28,20886944;-51,52722778;4,2;RGE Sul;0,32
+Lajeado;RS;-29,46694444;-51,96111111;4,22;RGE Sul;0,32
+Montenegro;RS;-29,71944444;-51,48944444;4,38;RGE Sul;0,32
+Mostardas;RS;-31,10251667;-50,90915278;4,2;CEEE Equatorial;0,28
+Nonoai;RS;-27,36798611;-52,76339444;4,3;RGE Sul;0,32
+Nova Prata;RS;-28,8025;-51,60416667;4,2;RGE Sul;0,32
+Novo Hamburgo;RS;-29,6842;-51,1331;4,25;RGE Sul;0,32
+Osório;RS;-29,88694444;-50,26888889;4,15;CEEE Equatorial;0,28
+Palmeira das Missões;RS;-27,90166667;-53,32888889;4,4;RGE Sul;0,32
+Pântano Grande;RS;-30,1872;-52,3735;4,45;CEEE Equatorial;0,28
+Passo Fundo;RS;-28,2628;-52,4067;4,3;RGE Sul;0,32
+Pedro Osório;RS;-31,86382778;-52,82630833;4,38;CEEE Equatorial;0,28
+Pelotas;RS;-31,7654;-52,3376;4,35;CEEE Equatorial;0,28
+Porto Alegre;RS;-30,0325;-51,2257;4,42;CEEE Equatorial;0,28
+Porto Mauá;RS;-27,57863333;-54,67195;4,45;RGE Sul;0,32
+Porto Vera Cruz;RS;-27,73437222;-54,89903056;4,45;RGE Sul;0,32
+Porto Xavier;RS;-27,90568889;-55,13956111;4,5;RGE Sul;0,32
+Quaraí;RS;-30,38286667;-56,45364444;4,75;RGE Sul;0,32
+Rosário do Sul;RS;-30,2775;-54,92527778;4,6;RGE Sul;0,32
+Salto do Jacuí;RS;-29,39638889;-52,99166667;4,4;RGE Sul;0,32
+Salvador do Sul;RS;-29,43973056;-51,50942222;4,3;RGE Sul;0,32
+Sant'Ana do Livramento;RS;-30,88938333;-55,53481111;4,6;RGE Sul;0,32
+Santa Cruz do Sul;RS;-29,71;-52,42;4,35;RGE Sul;0,32
+Santa Maria;RS;-29,6842;-53,8069;4,4;RGE Sul;0,32
+Santa Rosa;RS;-27,90888889;-54,52222222;4,5;RGE Sul;0,32
+Santa Vitória do Palmar;RS;-33,50222222;-53,34416667;4,3;CEEE Equatorial;0,28
+Santiago;RS;-29,215;-54,84222222;4,55;RGE Sul;0,32
+Santo Ângelo;RS;-28,28222222;-54,16888889;4,5;RGE Sul;0,32
+São Borja;RS;-28,65305556;-56,03277778;4,65;RGE Sul;0,32
+São Francisco de Paula;RS;-29,4478;-50,5841;4,08;RGE Sul;0,32
+São Gabriel;RS;-30,345;-54,26777778;4,55;RGE Sul;0,32
+São Leopoldo;RS;-29,762;-51,1425;4,38;RGE Sul;0,32
+São Lourenço do Sul;RS;-31,3653;-51,9772;4,3;CEEE Equatorial;0,28
+São Luiz Gonzaga;RS;-28,37638889;-55,0375;4,6;RGE Sul;0,32
+São Sepé;RS;-30,18222222;-53,57944444;4,5;RGE Sul;0,32
+Sapiranga;RS;-29,63833333;-51,0075;4,24;RGE Sul;0,32
+Sapucaia do Sul;RS;-29,836;-51,146;4,39;RGE Sul;0,32
+Soledade;RS;-28,86305556;-52,54055556;4,3;RGE Sul;0,32
+Tapes;RS;-30,6732;-51,3965;4,35;CEEE Equatorial;0,28
+Taquara;RS;-29,65051389;-50,78116667;4,28;RGE Sul;0,32
+Taquaruçu do Sul;RS;-27,39803611;-53,46695;4,35;RGE Sul;0,32
+Terra de Areia;RS;-29,5855;-50,0634;4,15;CEEE Equatorial;0,28
+Teutônia;RS;-29,48891389;-51,81281389;4,32;RGE Sul;0,32
+Torres;RS;-29,34;-49,72;4,12;CEEE Equatorial;0,28
+Tramandaí;RS;-29,98472222;-50,13361111;4,15;CEEE Equatorial;0,28
+Tupanciretã;RS;-29,15305556;-53,74333333;4,45;RGE Sul;0,32
+Uruguaiana;RS;-29,754;-57,088;4,8;RGE Sul;0,32
+Vacaria;RS;-28,51;-50,93;4,1;RGE Sul;0,32
+Venâncio Aires;RS;-29,61165;-52,19187778;4,38;RGE Sul;0,32
+Veranópolis;RS;-28,935;-51,56833333;4,18;RGE Sul;0,32
+Viamão;RS;-30,0836;-51,0236;4,36;CEEE Equatorial;0,28
+Xangri-lá;RS;-29,8025;-50,0468;4,1;CEEE Equatorial;0,28
