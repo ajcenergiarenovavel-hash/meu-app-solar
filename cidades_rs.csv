@@ -1,0 +1,7 @@
+cidade,lat,lon,hsp_anual,concessionaria,fio_b
+Porto Alegre,-30.0325,-51.2257,4.42,CEEE Equatorial,0.28
+Caxias do Sul,-29.1678,-51.1794,4.15,RGE Sul,0.32
+Passo Fundo,-28.2628,-52.4067,4.30,RGE Sul,0.32
+Pelotas,-31.7654,-52.3376,4.35,CEEE Equatorial,0.28
+Santa Maria,-29.6842,-53.8069,4.40,RGE Sul,0.32
+... (todas as outras 492 cidades)
