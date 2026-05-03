@@ -2,17 +2,17 @@ import streamlit as st
 import pandas as pd
 from geopy.geocoders import Nominatim
 
-# Base simplificada CRESESB (Sugestão: ampliar com CSV no futuro)
+# Base simplificada CRESESB com médias mensais (kWh/m2.dia)
+# Nota: Em um cenário real, você pode expandir esta lista ou carregar um CSV
 base_cresesb = {
-    "Porto Alegre": {"hsp": 4.42},
-    "Canoas": {"hsp": 4.40},
-    "Gravataí": {"hsp": 4.38},
-    "Encruzilhada do Sul": {"hsp": 4.55},
-    "São Paulo": {"hsp": 4.25},
-    "Cuiabá": {"hsp": 4.95}
+    "Porto Alegre": [5.21, 5.02, 4.35, 3.50, 2.75, 2.25, 2.45, 3.10, 3.75, 4.45, 5.15, 5.45],
+    "Canoas": [5.20, 5.00, 4.30, 3.45, 2.70, 2.20, 2.40, 3.05, 3.70, 4.40, 5.10, 5.40],
+    "Gravataí": [5.18, 4.98, 4.28, 3.48, 2.72, 2.22, 2.42, 3.08, 3.72, 4.42, 5.12, 5.42],
+    "Encruzilhada do Sul": [5.40, 5.20, 4.50, 3.65, 2.90, 2.40, 2.60, 3.25, 3.90, 4.60, 5.30, 5.60],
+    "São Paulo": [5.05, 4.90, 4.20, 3.80, 3.30, 3.10, 3.25, 3.75, 4.05, 4.40, 4.95, 5.00],
 }
 
-geolocator = Nominatim(user_agent="solar_app_assis_v3")
+geolocator = Nominatim(user_agent="solar_app_assis_v4")
 
 def buscar_por_coordenadas(lat, lon):
     try:
@@ -33,15 +33,13 @@ def buscar_por_nome(nome_cidade):
 
 st.set_page_config(page_title="Dimensionamento Solar Profissional", layout="wide", page_icon="☀️")
 
-st.title("☀️ Calculadora Solar: Dimensionamento e Economia")
+st.title("☀️ Calculadora Solar: Dimensionamento e Geração Mensal")
 st.markdown("---")
 
 col1, col2 = st.columns(2)
 
 with col1:
     st.subheader("📍 Localização e Tarifa")
-    
-    # Opção de busca por Nome da Cidade
     cidade_input = st.text_input("Digite o nome da cidade", value="Porto Alegre")
     if st.button("Buscar por Nome"):
         lat_busca, lon_busca = buscar_por_nome(cidade_input)
@@ -51,11 +49,9 @@ with col1:
             st.session_state['cidade'] = cidade_input
             st.success(f"Coordenadas encontradas para {cidade_input}")
         else:
-            st.error("Cidade não encontrada. Verifique o nome.")
+            st.error("Cidade não encontrada.")
 
-    st.write("--- ou use as coordenadas ---")
-    
-    # Campos de Coordenadas (com valores persistentes)
+    st.write("---")
     lat = st.number_input("Latitude", value=st.session_state.get('lat', -30.0325), format="%.6f", key="lat_input")
     lon = st.number_input("Longitude", value=st.session_state.get('lon', -51.2257), format="%.6f", key="lon_input")
     
@@ -70,7 +66,6 @@ with col1:
 
 with col2:
     st.subheader("⚙️ Configuração do Sistema")
-    
     col_placa, col_qtd = st.columns(2)
     with col_placa:
         p_painel = st.number_input("Potência do Painel (Wp)", value=550, step=10)
@@ -78,33 +73,42 @@ with col2:
         qtd_painel = st.number_input("Quantidade de Placas", value=10, step=1)
     
     potencia_total_w = p_painel * qtd_painel
-    st.info(f"**Potência Total do Sistema:** {potencia_total_w / 1000:.2f} kWp")
-    
+    st.info(f"**Potência Total:** {potencia_total_w / 1000:.2f} kWp")
     pr = st.slider("Eficiência (Performance Ratio)", 0.70, 0.90, 0.80)
 
-# Lógica de cálculo baseada na cidade definida
 if 'cidade' in st.session_state:
     cidade_ref = st.session_state['cidade']
-    # Busca HSP na base (usa Porto Alegre como fallback se a cidade não estiver na lista fixa)
-    hsp = base_cresesb.get(cidade_ref, {"hsp": 4.42})["hsp"]
+    # Busca a lista de irradiação mensal. Se não houver, usa Porto Alegre como base.
+    hsp_mensal = base_cresesb.get(cidade_ref, base_cresesb["Porto Alegre"])
     
-    geracao_diaria = (potencia_total_w / 1000) * hsp * pr
-    geracao_mensal = geracao_diaria * 30.4
-    economia_mensal = geracao_mensal * tarifa
-    economia_anual = economia_mensal * 12
+    meses = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"]
+    geracao_kwh = []
+    economia_brl = []
+
+    for hsp in hsp_mensal:
+        # Cálculo: (P_Wp / 1000) * HSP * PR * 30.4 dias
+        gen = (potencia_total_w / 1000) * hsp * pr * 30.4
+        geracao_kwh.append(round(gen, 2))
+        economia_brl.append(round(gen * tarifa, 2))
+
+    df_geracao = pd.DataFrame({
+        "Mês": meses,
+        "Geração (kWh)": geracao_kwh,
+        "Economia (R$)": economia_brl
+    })
 
     st.divider()
     
-    res1, res2, res3 = st.columns(3)
-    res1.metric("Local de Referência", cidade_ref)
-    res2.metric("Geração Estimada", f"{geracao_mensal:.1f} kWh/mês")
-    res3.metric("Economia Mensal", f"R$ {economia_mensal:.2f}")
+    # Métricas principais
+    m1, m2, m3 = st.columns(3)
+    m1.metric("Localidade", cidade_ref)
+    m2.metric("Geração Média Mensal", f"{sum(geracao_kwh)/12:.1f} kWh")
+    m3.metric("Economia Anual Total", f"R$ {sum(economia_brl):.2f}")
 
-    st.success(f"💰 **Economia anual estimada: R$ {economia_anual:.2f}**")
-    
-    st.subheader("Projeção de Economia Acumulada (12 meses)")
-    dados_grafico = pd.DataFrame({
-        "Mês": [f"Mês {i}" for i in range(1, 13)],
-        "Economia (R$)": [economia_mensal * i for i in range(1, 13)]
-    })
-    st.area_chart(dados_grafico.set_index("Mês"))
+    # Tabela de Geração Mensal
+    st.subheader("📊 Tabela de Geração Mensal")
+    st.table(df_geracao)
+
+    # Gráfico
+    st.subheader("Gráfico de Geração Mensal (kWh)")
+    st.bar_chart(df_geracao.set_index("Mês")["Geração (kWh)"])
